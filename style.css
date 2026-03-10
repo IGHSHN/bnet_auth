@@ -1,0 +1,302 @@
+/* ── Reset ── */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* ── Body ── */
+body {
+    font-family: 'Rajdhani', sans-serif;
+    background: #0d0d1a;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+/* ── Main container ── */
+.container {
+    background: #13112e;
+    border-radius: 18px;
+    box-shadow: 0 0 50px rgba(138,43,226,0.3), 0 0 100px rgba(138,43,226,0.08);
+    max-width: 620px;
+    width: 100%;
+    padding: 36px 40px 38px;
+    border: 1px solid rgba(138,43,226,0.35);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Ambient glow corners */
+.container::before {
+    content: '';
+    position: absolute;
+    top: -80px; left: -80px;
+    width: 260px; height: 260px;
+    background: radial-gradient(circle, rgba(138,43,226,0.14) 0%, transparent 70%);
+    pointer-events: none;
+}
+.container::after {
+    content: '';
+    position: absolute;
+    bottom: -80px; right: -80px;
+    width: 260px; height: 260px;
+    background: radial-gradient(circle, rgba(160,80,255,0.1) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+/* ── Header ── */
+.header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+.header h1 {
+    color: #fff;
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-shadow: 0 0 20px rgba(160,80,255,0.8);
+}
+.header .subtitle {
+    color: rgba(255,255,255,0.4);
+    font-size: 13px;
+    margin-top: 5px;
+    letter-spacing: 0.5px;
+}
+
+/* ── Code card ── */
+.code-card {
+    background: linear-gradient(120deg, #8833ff 0%, #b060ff 50%, #6600dd 100%);
+    border-radius: 14px;
+    padding: 24px 28px 22px;
+    text-align: center;
+    margin-bottom: 22px;
+    box-shadow: 0 6px 36px rgba(138,43,226,0.45), 0 0 0 1px rgba(200,130,255,0.2);
+    position: relative;
+    overflow: hidden;
+}
+.code-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+        135deg,
+        transparent,
+        transparent 28px,
+        rgba(255,255,255,0.025) 28px,
+        rgba(255,255,255,0.025) 56px
+    );
+    pointer-events: none;
+}
+
+/* ── Code label ── */
+.code-label {
+    color: rgba(255,255,255,0.65);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+}
+
+/* ── Digit slots ── */
+.code-digits {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.digit {
+    width: 54px;
+    height: 72px;
+    background: rgba(0,0,0,0.18);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 36px;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 0 0 18px rgba(255,255,255,0.4);
+    border: 1px solid rgba(255,255,255,0.12);
+    transition: all 0.25s;
+}
+.digit.empty {
+    color: rgba(255,255,255,0.35);
+    font-size: 28px;
+}
+.digit.filled {
+    color: #fff;
+    font-size: 36px;
+    background: rgba(0,0,0,0.22);
+}
+
+/* Gap between digit groups */
+.digit-gap {
+    width: 18px;
+}
+
+/* ── Progress bar ── */
+.progress-bar {
+    width: 100%;
+    height: 5px;
+    background: rgba(255,255,255,0.18);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 8px;
+}
+.progress-fill {
+    height: 100%;
+    background: rgba(255,255,255,0.85);
+    transition: width 1s linear;
+    border-radius: 10px;
+}
+.progress-fill.warning {
+    background: #ff8080;
+}
+
+.time-remaining {
+    color: rgba(255,255,255,0.65);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+/* ── Input section ── */
+label {
+    display: block;
+    color: rgba(255,255,255,0.7);
+    font-weight: 600;
+    margin-bottom: 8px;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+}
+
+input[type="text"] {
+    width: 100%;
+    padding: 13px 16px;
+    background: rgba(255,255,255,0.05);
+    border: 1.5px solid rgba(138,43,226,0.4);
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: 'Share Tech Mono', monospace;
+    color: #fff;
+    transition: all 0.3s;
+    margin-bottom: 10px;
+}
+input[type="text"]::placeholder {
+    color: rgba(255,255,255,0.22);
+}
+input[type="text"]:focus {
+    outline: none;
+    border-color: #b060ff;
+    box-shadow: 0 0 0 3px rgba(138,43,226,0.2);
+}
+
+/* ── Buttons ── */
+.btn-row {
+    display: flex;
+    gap: 12px;
+}
+
+.key-btn {
+    flex: 1;
+    padding: 13px 14px;
+    border-radius: 8px;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: all 0.25s;
+}
+.key-btn.primary {
+    background: linear-gradient(90deg, #c060ff 0%, #8833ff 60%, #5500cc 100%);
+    border: none;
+    color: #fff;
+    box-shadow: 0 0 16px rgba(160,80,255,0.45);
+}
+.key-btn.primary:hover {
+    filter: brightness(1.12);
+    box-shadow: 0 0 28px rgba(160,80,255,0.65);
+}
+.key-btn.secondary {
+    background: transparent;
+    border: 1.5px solid rgba(138,43,226,0.55);
+    color: rgba(255,255,255,0.75);
+}
+.key-btn.secondary:hover {
+    background: rgba(138,43,226,0.18);
+    border-color: #b060ff;
+    color: #fff;
+}
+.key-btn.flash {
+    background: rgba(72,187,120,0.2) !important;
+    border-color: #48bb78 !important;
+    color: #48bb78 !important;
+}
+
+/* ── Error / Status ── */
+.error {
+    background: rgba(197,48,48,0.1);
+    border: 1.5px solid rgba(245,101,101,0.35);
+    color: #fc8181;
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    margin-top: 10px;
+    display: none;
+}
+.error.active { display: block; }
+
+.status {
+    text-align: center;
+    color: #68d391;
+    font-size: 12px;
+    font-weight: 600;
+    margin-top: 8px;
+    display: none;
+}
+.status.active { display: block; }
+
+/* ── Social footer ── */
+.social-footer {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 22px;
+    padding-top: 18px;
+    border-top: 1px solid rgba(138,43,226,0.18);
+}
+.social-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: 30px;
+    border: 1px solid rgba(138,43,226,0.3);
+    background: rgba(138,43,226,0.07);
+    transition: all 0.25s;
+    cursor: default;
+}
+.social-link:hover {
+    background: rgba(138,43,226,0.18);
+    border-color: rgba(160,80,255,0.6);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(138,43,226,0.25);
+}
+.social-link svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+}
+.social-name {
+    color: rgba(255,255,255,0.7);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+.social-link:hover .social-name {
+    color: #fff;
+}
