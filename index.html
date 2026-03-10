@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Battle.net Authenticator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: #0d0d1a;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: #13112e;
+            border-radius: 18px;
+            box-shadow: 0 0 50px rgba(138,43,226,0.3), 0 0 100px rgba(138,43,226,0.08);
+            max-width: 620px;
+            width: 100%;
+            padding: 36px 40px 38px;
+            border: 1px solid rgba(138,43,226,0.35);
+            position: relative;
+            overflow: hidden;
+        }
+        .container::before {
+            content: '';
+            position: absolute;
+            top: -80px; left: -80px;
+            width: 260px; height: 260px;
+            background: radial-gradient(circle, rgba(138,43,226,0.14) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .container::after {
+            content: '';
+            position: absolute;
+            bottom: -80px; right: -80px;
+            width: 260px; height: 260px;
+            background: radial-gradient(circle, rgba(160,80,255,0.1) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        /* ── Header ── */
+        .header { text-align: center; margin-bottom: 20px; }
+        .header h1 {
+            color: #fff;
+            font-size: 26px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-shadow: 0 0 20px rgba(160,80,255,0.8);
+        }
+        .header .subtitle {
+            color: rgba(255,255,255,0.4);
+            font-size: 13px;
+            margin-top: 5px;
+            letter-spacing: 0.5px;
+        }
+
+
+
+        /* ══════════════════════════════
+           ONE code card — always visible
+        ══════════════════════════════ */
+        .code-card {
+            background: linear-gradient(120deg, #8833ff 0%, #b060ff 50%, #6600dd 100%);
+            border-radius: 14px;
+            padding: 24px 28px 22px;
+            text-align: center;
+            margin-bottom: 22px;
+            box-shadow: 0 6px 36px rgba(138,43,226,0.45), 0 0 0 1px rgba(200,130,255,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        .code-card::before {
+            content: '';
+            position: absolute; inset: 0;
+            background: repeating-linear-gradient(
+                135deg, transparent, transparent 28px,
+                rgba(255,255,255,0.025) 28px,
+                rgba(255,255,255,0.025) 56px
+            );
+            pointer-events: none;
+        }
+
+        .code-label {
+            color: rgba(255,255,255,0.65);
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 14px;
+        }
+
+        /* The digits row */
+        .code-digits {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        /* Each individual digit/dash slot */
+        .digit {
+            width: 54px;
+            height: 72px;
+            background: rgba(0,0,0,0.18);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 36px;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 0 0 18px rgba(255,255,255,0.4);
+            border: 1px solid rgba(255,255,255,0.12);
+            transition: all 0.25s;
+            position: relative;
+        }
+        /* Dash state */
+        .digit.empty {
+            color: rgba(255,255,255,0.35);
+            font-size: 28px;
+            letter-spacing: -2px;
+        }
+        /* Filled state */
+        .digit.filled {
+            color: #fff;
+            font-size: 36px;
+            background: rgba(0,0,0,0.22);
+        }
+
+        /* Spacer between groups */
+        .digit-gap {
+            width: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255,255,255,0.3);
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        /* Progress bar inside card */
+        .progress-bar {
+            width: 100%;
+            height: 5px;
+            background: rgba(255,255,255,0.18);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+        .progress-fill {
+            height: 100%;
+            background: rgba(255,255,255,0.85);
+            transition: width 1s linear;
+            border-radius: 10px;
+        }
+        .progress-fill.warning { background: #ff8080; }
+
+        .time-remaining {
+            color: rgba(255,255,255,0.65);
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        /* ── Input section ── */
+        label {
+            display: block;
+            color: rgba(255,255,255,0.7);
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+            letter-spacing: 0.5px;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 13px 16px;
+            background: rgba(255,255,255,0.05);
+            border: 1.5px solid rgba(138,43,226,0.4);
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: 'Share Tech Mono', monospace;
+            color: #fff;
+            transition: all 0.3s;
+            margin-bottom: 10px;
+        }
+        input[type="text"]::placeholder { color: rgba(255,255,255,0.22); }
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #b060ff;
+            box-shadow: 0 0 0 3px rgba(138,43,226,0.2);
+        }
+
+        /* ── Buttons ── */
+        .btn-row { display: flex; gap: 12px; }
+        .key-btn {
+            flex: 1;
+            padding: 13px 14px;
+            border-radius: 8px;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            letter-spacing: 0.5px;
+            transition: all 0.25s;
+        }
+        .key-btn.primary {
+            background: linear-gradient(90deg, #c060ff 0%, #8833ff 60%, #5500cc 100%);
+            border: none;
+            color: #fff;
+            box-shadow: 0 0 16px rgba(160,80,255,0.45);
+        }
+        .key-btn.primary:hover { filter: brightness(1.12); box-shadow: 0 0 28px rgba(160,80,255,0.65); }
+        .key-btn.secondary {
+            background: transparent;
+            border: 1.5px solid rgba(138,43,226,0.55);
+            color: rgba(255,255,255,0.75);
+        }
+        .key-btn.secondary:hover { background: rgba(138,43,226,0.18); border-color: #b060ff; color: #fff; }
+        .key-btn.flash {
+            background: rgba(72,187,120,0.2) !important;
+            border-color: #48bb78 !important;
+            color: #48bb78 !important;
+        }
+
+        .error {
+            background: rgba(197,48,48,0.1);
+            border: 1.5px solid rgba(245,101,101,0.35);
+            color: #fc8181;
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            margin-top: 10px;
+            display: none;
+        }
+        .error.active { display: block; }
+        .status {
+            text-align: center;
+            color: #68d391;
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 8px;
+            display: none;
+        }
+        .status.active { display: block; }
+
+        /* ── Social footer ── */
+        .social-footer {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-top: 22px;
+            padding-top: 18px;
+            border-top: 1px solid rgba(138,43,226,0.18);
+        }
+        .social-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 30px;
+            border: 1px solid rgba(138,43,226,0.3);
+            background: rgba(138,43,226,0.07);
+            text-decoration: none;
+            transition: all 0.25s;
+            cursor: default;
+        }
+        .social-link:hover {
+            background: rgba(138,43,226,0.18);
+            border-color: rgba(160,80,255,0.6);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 14px rgba(138,43,226,0.25);
+        }
+        .social-link svg {
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+        }
+        .social-name {
+            color: rgba(255,255,255,0.7);
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        .social-link:hover .social-name { color: #fff; }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- Header -->
+    <div class="header">
+        <h1>⚔️ Battle.net Authenticator</h1>
+        <p class="subtitle">Paste your private key to generate codes</p>
+    </div>
+
+
+
+    <!-- Single code card — always visible -->
+    <div class="code-card">
+        <div class="code-label">Authentication Code</div>
+
+        <!-- 8 digit slots with a gap in the middle -->
+        <div class="code-digits">
+            <div class="digit empty" id="d0">-</div>
+            <div class="digit empty" id="d1">-</div>
+            <div class="digit empty" id="d2">-</div>
+            <div class="digit empty" id="d3">-</div>
+            <div class="digit-gap"></div>
+            <div class="digit empty" id="d4">-</div>
+            <div class="digit empty" id="d5">-</div>
+            <div class="digit empty" id="d6">-</div>
+            <div class="digit empty" id="d7">-</div>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressBar"></div>
+        </div>
+        <div class="time-remaining" id="timeRemaining">Refreshes in 30s</div>
+    </div>
+
+    <!-- Private Key input -->
+    <div class="input-section">
+        <label for="secretInput">Private Key</label>
+        <input type="text" id="secretInput" placeholder="Private Key" autocomplete="off">
+        <div class="btn-row">
+            <button class="key-btn primary" id="copyKeyBtn" onclick="copyCode()">📋 Copy Code</button>
+            <button class="key-btn secondary" id="pasteKeyBtn" onclick="pasteKey()">📥 Paste Key</button>
+        </div>
+        <div id="statusMsg" class="status">✓ Generating codes...</div>
+    </div>
+
+    <div id="errorMsg" class="error"></div>
+
+    <!-- Social footer -->
+    <div class="social-footer">
+        <!-- Instagram -->
+        <div class="social-link">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="ig-grad" x1="0%" y1="100%" x2="100%" y2="0%">
+                        <stop offset="0%" style="stop-color:#f09433"/>
+                        <stop offset="25%" style="stop-color:#e6683c"/>
+                        <stop offset="50%" style="stop-color:#dc2743"/>
+                        <stop offset="75%" style="stop-color:#cc2366"/>
+                        <stop offset="100%" style="stop-color:#bc1888"/>
+                    </linearGradient>
+                </defs>
+                <rect x="2" y="2" width="20" height="20" rx="6" ry="6" stroke="url(#ig-grad)" stroke-width="1.8" fill="none"/>
+                <circle cx="12" cy="12" r="4.5" stroke="url(#ig-grad)" stroke-width="1.8" fill="none"/>
+                <circle cx="17.5" cy="6.5" r="1.2" fill="url(#ig-grad)"/>
+            </svg>
+            <span class="social-name">hshn</span>
+        </div>
+        <div class="social-link">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z" fill="#5865F2"/>
+            </svg>
+            <span class="social-name">hshn</span>
+        </div>
+    </div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+<script>
+    let secretBytes = null;
+    let updateInterval = null;
+    let currentCode = '';
+
+
+
+    // ── Render digits ──
+    function renderDigits(code) {
+        for (let i = 0; i < 8; i++) {
+            const el = document.getElementById('d' + i);
+            if (code && code.length === 8) {
+                el.textContent = code[i];
+                el.classList.remove('empty');
+                el.classList.add('filled');
+            } else {
+                el.textContent = '-';
+                el.classList.remove('filled');
+                el.classList.add('empty');
+            }
+        }
+    }
+
+    // ── TOTP ──
+    function hexToBytes(hex) {
+        hex = hex.replace(/\s/g, '').toLowerCase();
+        if (!/^[0-9a-f]+$/.test(hex)) throw new Error('Invalid hex');
+        if (hex.length % 2 !== 0) throw new Error('Odd hex length');
+        const bytes = [];
+        for (let i = 0; i < hex.length; i += 2) bytes.push(parseInt(hex.substr(i, 2), 16));
+        return bytes;
+    }
+
+    function generateTOTP(secretHex) {
+        const counter = Math.floor(Math.floor(Date.now() / 1000) / 30);
+        const counterHex = counter.toString(16).padStart(16, '0');
+        const key = CryptoJS.enc.Hex.parse(secretHex);
+        const msg = CryptoJS.enc.Hex.parse(counterHex);
+        const hmac = CryptoJS.HmacSHA1(msg, key);
+        const bytes = [];
+        const h = hmac.toString(CryptoJS.enc.Hex);
+        for (let i = 0; i < h.length; i += 2) bytes.push(parseInt(h.substr(i, 2), 16));
+        const offset = bytes[bytes.length - 1] & 0x0f;
+        const code = (
+            ((bytes[offset]   & 0x7f) << 24) |
+            ((bytes[offset+1] & 0xff) << 16) |
+            ((bytes[offset+2] & 0xff) << 8)  |
+             (bytes[offset+3] & 0xff)
+        );
+        return (code % 100000000).toString().padStart(8, '0');
+    }
+
+    function updateDisplay() {
+        if (!secretBytes) return;
+        try {
+            const hex = secretBytes.map(b => b.toString(16).padStart(2,'0')).join('');
+            currentCode = generateTOTP(hex);
+            renderDigits(currentCode);
+            const timeLeft = 30 - (Math.floor(Date.now() / 1000) % 30);
+            const bar = document.getElementById('progressBar');
+            bar.style.width = ((timeLeft / 30) * 100) + '%';
+            bar.classList.toggle('warning', timeLeft <= 5);
+            document.getElementById('timeRemaining').textContent = `Refreshes in ${timeLeft}s`;
+        } catch(e) { console.error(e); }
+    }
+
+    function startGenerator(input) {
+        const errorMsg  = document.getElementById('errorMsg');
+        const statusMsg = document.getElementById('statusMsg');
+
+        if (!input || input.length < 10) {
+            errorMsg.classList.remove('active');
+            statusMsg.classList.remove('active');
+            renderDigits('');
+            if (updateInterval) { clearInterval(updateInterval); updateInterval = null; }
+            secretBytes = null;
+            currentCode = '';
+            document.getElementById('progressBar').style.width = '0%';
+            document.getElementById('timeRemaining').textContent = 'Refreshes in 30s';
+            return;
+        }
+        try {
+            secretBytes = hexToBytes(input);
+            errorMsg.classList.remove('active');
+            statusMsg.classList.add('active');
+            updateDisplay();
+            if (updateInterval) clearInterval(updateInterval);
+            updateInterval = setInterval(updateDisplay, 1000);
+        } catch(e) {
+            errorMsg.textContent = 'Invalid private key! Use HEX format.';
+            errorMsg.classList.add('active');
+            statusMsg.classList.remove('active');
+            renderDigits('');
+            secretBytes = null;
+            currentCode = '';
+        }
+    }
+
+    // ── Copy Code ──
+    function copyCode() {
+        const btn = document.getElementById('copyKeyBtn');
+        if (!currentCode) { flashBtn(btn, '⚠️ No code yet'); return; }
+        writeToClipboard(currentCode, () => flashBtn(btn, '✓ Copied!'));
+    }
+
+    // ── Paste Key ──
+    async function pasteKey() {
+        const btn = document.getElementById('pasteKeyBtn');
+        try {
+            const text = await navigator.clipboard.readText();
+            document.getElementById('secretInput').value = text;
+            startGenerator(text.trim());
+            flashBtn(btn, '✓ Pasted!');
+        } catch(e) {
+            document.getElementById('secretInput').focus();
+            const orig = btn.textContent;
+            btn.textContent = '⌨️ Press Ctrl+V';
+            setTimeout(() => btn.textContent = orig, 2000);
+        }
+    }
+
+    function writeToClipboard(text, cb) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(cb).catch(() => fallback(text, cb));
+        } else { fallback(text, cb); }
+    }
+    function fallback(text, cb) {
+        const ta = document.createElement('textarea');
+        ta.value = text; ta.style.cssText = 'position:fixed;left:-9999px';
+        document.body.appendChild(ta); ta.select();
+        try { document.execCommand('copy'); cb(); } catch(e) {}
+        document.body.removeChild(ta);
+    }
+    function flashBtn(btn, msg) {
+        const orig = btn.textContent;
+        const origClass = btn.className;
+        btn.textContent = msg;
+        btn.classList.add('flash');
+        setTimeout(() => { btn.textContent = orig; btn.className = origClass; }, 2000);
+    }
+
+    // ── Input listeners ──
+    const secretInput = document.getElementById('secretInput');
+    secretInput.addEventListener('input', e => startGenerator(e.target.value.trim()));
+    secretInput.addEventListener('paste', e => setTimeout(() => startGenerator(e.target.value.trim()), 100));
+</script>
+</body>
+</html>
