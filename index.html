@@ -11,24 +11,19 @@
 <body>
 <div class="container">
 
-    <!-- Header -->
     <div class="header">
         <h1>⚔️ Battle.net Authenticator</h1>
         <p class="subtitle">Your all-in-one Battle.net authentication tool</p>
     </div>
 
-    <!-- Tab switcher -->
     <div class="tabs">
         <button class="tab active" id="tab-generate" onclick="switchTab('generate')">🔢 Generate Code</button>
         <button class="tab" id="tab-setup" onclick="switchTab('setup')">🔑 Get New Key</button>
     </div>
 
-    <!-- ══════════════════════════════════════
-         TAB 1: Generate Code
-    ══════════════════════════════════════ -->
+    <!-- TAB 1: Generate Code -->
     <div class="tab-panel active" id="panel-generate">
 
-        <!-- Code card -->
         <div class="code-card">
             <div class="code-label">Authentication Code</div>
             <div class="code-digits">
@@ -48,7 +43,6 @@
             <div class="time-remaining" id="timeRemaining">Refreshes in 30s</div>
         </div>
 
-        <!-- Private Key input -->
         <div class="input-section">
             <label for="secretInput">Private Key</label>
             <input type="text" id="secretInput" placeholder="Private Key" autocomplete="off">
@@ -62,12 +56,9 @@
 
     </div>
 
-    <!-- ══════════════════════════════════════
-         TAB 2: Get New Key
-    ══════════════════════════════════════ -->
+    <!-- TAB 2: Get New Key -->
     <div class="tab-panel" id="panel-setup">
 
-        <!-- Step indicators -->
         <div class="steps-row">
             <div class="step active" id="step-ind-1">
                 <div class="step-num">1</div>
@@ -85,19 +76,19 @@
             </div>
         </div>
 
-        <!-- Step 1: Login -->
+        <!-- Step 1 -->
         <div class="setup-step" id="setup-step-1">
             <div class="setup-card">
                 <div class="setup-icon">🌐</div>
                 <h3>Login to Battle.net</h3>
-                <p>Click the button below to open the Battle.net login page. Sign in with your account and complete any 2FA if prompted.</p>
+                <p>Click the button below to open the Battle.net login page. Sign in and complete any 2FA if prompted.</p>
                 <p class="setup-note">⚠️ After logging in you will see a <strong>404 error page</strong> — this is normal! Copy the full URL from your browser and come back here.</p>
                 <button class="key-btn primary full-width" onclick="openLogin()">🌐 Open Battle.net Login</button>
             </div>
             <button class="key-btn secondary full-width mt-10" onclick="goToStep(2)">I'm on the 404 page →</button>
         </div>
 
-        <!-- Step 2: Paste URL -->
+        <!-- Step 2 -->
         <div class="setup-step hidden" id="setup-step-2">
             <div class="setup-card">
                 <div class="setup-icon">🔗</div>
@@ -113,23 +104,20 @@
             </div>
         </div>
 
-        <!-- Step 3: Result -->
+        <!-- Step 3 -->
         <div class="setup-step hidden" id="setup-step-3">
 
-            <!-- Loading state -->
             <div id="setup-loading" class="setup-card center">
                 <div class="spinner"></div>
                 <p style="margin-top:14px; color:rgba(255,255,255,0.6);">Connecting to Battle.net...</p>
             </div>
 
-            <!-- Success state -->
             <div id="setup-result" class="hidden">
                 <div class="setup-card success-card">
                     <div class="setup-icon">✅</div>
                     <h3>Authenticator Ready!</h3>
                     <p>Your new authenticator has been attached. Save the details below in a <strong>secure location</strong>.</p>
                 </div>
-
                 <div class="result-row">
                     <div class="result-label">Serial Number</div>
                     <div class="result-value" id="res-serial">—</div>
@@ -145,16 +133,11 @@
                     <div class="result-value mono" id="res-secret">—</div>
                     <button class="copy-mini" onclick="copyField('res-secret')">📋</button>
                 </div>
-
-                <button class="key-btn primary full-width mt-10" onclick="useThisKey()">
-                    ⚔️ Use This Key → Generate Code
-                </button>
-                <button class="key-btn secondary full-width mt-10" onclick="resetSetup()">
-                    🔄 Set Up Another Account
-                </button>
+                <button class="key-btn primary full-width mt-10" onclick="useThisKey()">⚔️ Use This Key → Generate Code</button>
+                <button class="key-btn secondary full-width mt-10" onclick="downloadTxt()">💾 Download Backup (.txt)</button>
+                <button class="key-btn secondary full-width mt-10" onclick="resetSetup()">🔄 Set Up Another Account</button>
             </div>
 
-            <!-- Error state -->
             <div id="setup-error" class="hidden">
                 <div class="setup-card error-card">
                     <div class="setup-icon">❌</div>
@@ -174,10 +157,10 @@
             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <defs>
                     <linearGradient id="ig-grad" x1="0%" y1="100%" x2="100%" y2="0%">
-                        <stop offset="0%"   style="stop-color:#f09433"/>
-                        <stop offset="25%"  style="stop-color:#e6683c"/>
-                        <stop offset="50%"  style="stop-color:#dc2743"/>
-                        <stop offset="75%"  style="stop-color:#cc2366"/>
+                        <stop offset="0%" style="stop-color:#f09433"/>
+                        <stop offset="25%" style="stop-color:#e6683c"/>
+                        <stop offset="50%" style="stop-color:#dc2743"/>
+                        <stop offset="75%" style="stop-color:#cc2366"/>
                         <stop offset="100%" style="stop-color:#bc1888"/>
                     </linearGradient>
                 </defs>
@@ -196,7 +179,6 @@
     </div>
 
 </div>
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 <script src="app.js"></script>
 </body>
