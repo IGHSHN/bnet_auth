@@ -1,6 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Redirecting...</title>
+</head>
+<body>
 <script>
-var path = window.location.pathname;
-var base = "/bnet_auth/";
-var key = path.replace(base, "");
-window.location.replace(base + "?key=" + key);
+    var base = "/bnet_auth/";
+    var path = window.location.pathname;
+    var key  = path.replace(base, "").replace(/\/$/, "");
+    if (key && key.length > 0) {
+        window.location.replace(base + "?key=" + key);
+    } else {
+        window.location.replace(base);
+    }
 </script>
+</body>
+</html>
