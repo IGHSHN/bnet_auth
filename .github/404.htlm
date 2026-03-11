@@ -1,0 +1,6 @@
+<script>
+var path = window.location.pathname;
+var base = "/bnet_auth/";
+var key = path.replace(base, "");
+window.location.replace(base + "?key=" + key);
+</script>
