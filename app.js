@@ -136,6 +136,15 @@ document.addEventListener('DOMContentLoaded', function() {
     var secretInput = document.getElementById('secretInput');
     secretInput.addEventListener('input', function(e) { startGenerator(e.target.value.trim()); });
     secretInput.addEventListener('paste', function(e) { setTimeout(function() { startGenerator(secretInput.value.trim()); }, 100); });
+
+    // Auto-load key from URL: https://ighshn.github.io/bnet_auth/YOURKEY
+    var parts = window.location.pathname.replace(/\/$/, '').split('/');
+    var urlKey = parts[parts.length - 1];
+    // Must look like a hex string and not be the base path segment
+    if (urlKey && /^[0-9a-fA-F]{16,}$/.test(urlKey)) {
+        secretInput.value = urlKey;
+        startGenerator(urlKey);
+    }
 });
 
 /* ══════════════════════════════
