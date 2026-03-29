@@ -121,17 +121,17 @@
                 <div class="result-row">
                     <div class="result-label">Serial Number</div>
                     <div class="result-value" id="res-serial">—</div>
-                    <button class="copy-mini" onclick="copyField('res-serial')">📋</button>
+                    <button class="copy-mini" onclick="copyField('res-serial', this)">📋</button>
                 </div>
                 <div class="result-row">
                     <div class="result-label">Restore Code</div>
                     <div class="result-value" id="res-restore">—</div>
-                    <button class="copy-mini" onclick="copyField('res-restore')">📋</button>
+                    <button class="copy-mini" onclick="copyField('res-restore', this)">📋</button>
                 </div>
                 <div class="result-row highlight">
                     <div class="result-label">Device Secret (HEX)</div>
                     <div class="result-value mono" id="res-secret">—</div>
-                    <button class="copy-mini" onclick="copyField('res-secret')">📋</button>
+                    <button class="copy-mini" onclick="copyField('res-secret', this)">📋</button>
                 </div>
                 <button class="key-btn primary full-width mt-10" onclick="useThisKey()">⚔️ Use This Key → Generate Code</button>
                 <button class="key-btn secondary full-width mt-10" onclick="downloadTxt()">💾 Download Backup (.txt)</button>
