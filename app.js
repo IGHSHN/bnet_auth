@@ -77,7 +77,7 @@ function updateDisplay() {
 function startGenerator(input) {
     var errorMsg  = document.getElementById('errorMsg');
     var statusMsg = document.getElementById('statusMsg');
-    if (!input || input.length < 10) {
+    if (!input || input.length < 10 || input.length > 200) {
         errorMsg.classList.remove('active');
         statusMsg.classList.remove('active');
         renderDigits('');
@@ -191,40 +191,20 @@ function processSSO() {
     document.getElementById('setup-result').classList.add('hidden');
     document.getElementById('setup-error').classList.add('hidden');
 
-    var PROXY = 'https://small-sunset-f1a2.shasoonali.workers.dev/?url=';
-
-    fetch(PROXY + encodeURIComponent('https://oauth.battle.net/oauth/sso'), {
+    fetch('https://small-sunset-f1a2.shasoonali.workers.dev/', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8' },
-        body: new URLSearchParams({
-            client_id: 'baedda12fe054e4abdfc3ad7bdea970a',
-            grant_type: 'client_sso',
-            scope: 'auth.authenticator',
-            token: ssoToken
-        })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: ssoToken })
     })
     .then(function(res) { return res.json(); })
-    .then(function(bearerData) {
-        if (!bearerData.access_token) {
-            throw new Error(bearerData.error_description || 'Failed to get bearer token. The SSO token may have expired — try logging in again.');
-        }
-        return fetch(PROXY + encodeURIComponent('https://authenticator-rest-api.bnet-identity.blizzard.net/v1/authenticator'), {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Authorization': 'Bearer ' + bearerData.access_token
-            }
-        });
-    })
-    .then(function(res) { return res.json(); })
-    .then(function(authData) {
-        if (!authData.deviceSecret) {
-            throw new Error(authData.message || 'Failed to attach authenticator. Make sure no authenticator is currently attached to this account.');
+    .then(function(data) {
+        if (data.error) {
+            throw new Error(data.error);
         }
         document.getElementById('setup-loading').classList.add('hidden');
-        document.getElementById('res-serial').textContent  = authData.serial      || '—';
-        document.getElementById('res-restore').textContent = authData.restoreCode  || '—';
-        document.getElementById('res-secret').textContent  = authData.deviceSecret || '—';
+        document.getElementById('res-serial').textContent  = data.serial      || '—';
+        document.getElementById('res-restore').textContent = data.restoreCode  || '—';
+        document.getElementById('res-secret').textContent  = data.deviceSecret || '—';
         document.getElementById('setup-result').classList.remove('hidden');
         document.querySelectorAll('.step').forEach(function(el) { el.classList.remove('active'); el.classList.add('done'); });
     })
