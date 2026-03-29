@@ -39,8 +39,29 @@ function hexToBytes(hex) {
     return bytes;
 }
 
+// Time drift offset in ms (corrected on page load)
+var timeDriftMs = 0;
+
+function syncTime() {
+    var localBefore = Date.now();
+    fetch('https://worldtimeapi.org/api/ip')
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+        var serverTime = new Date(data.utc_datetime).getTime();
+        var localAfter = Date.now();
+        var localMid = (localBefore + localAfter) / 2;
+        timeDriftMs = serverTime - localMid;
+        console.log('Time drift corrected: ' + Math.round(timeDriftMs) + 'ms');
+    })
+    .catch(function() {
+        // If sync fails, just use local time — silent fail
+        timeDriftMs = 0;
+    });
+}
+
 function generateTOTP(secretHex) {
-    var counter = Math.floor(Math.floor(Date.now() / 1000) / 30);
+    var now = Date.now() + timeDriftMs;
+    var counter = Math.floor(Math.floor(now / 1000) / 30);
     var counterHex = counter.toString(16).padStart(16, '0');
     var key = CryptoJS.enc.Hex.parse(secretHex);
     var msg = CryptoJS.enc.Hex.parse(counterHex);
@@ -133,6 +154,7 @@ function pasteKey() {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+    syncTime();
     var secretInput = document.getElementById('secretInput');
     secretInput.addEventListener('input', function(e) { startGenerator(e.target.value.trim()); });
     secretInput.addEventListener('paste', function(e) { setTimeout(function() { startGenerator(secretInput.value.trim()); }, 100); });
